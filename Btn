@@ -1,0 +1,32 @@
+class ButtonEditor extends DefaultCellEditor {
+    private JButton button;
+    private boolean isClicked;
+
+    public ButtonEditor() {
+        super(new JCheckBox());
+        button = new JButton("Edit");
+        button.setOpaque(true);
+        button.addActionListener(e -> fireEditingStopped());
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        isClicked = true;
+        return button;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        if (isClicked) {
+            // Handle button click event (edit logic here)
+        }
+        isClicked = false;
+        return "Edit";
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        isClicked = false;
+        return super.stopCellEditing();
+    }
+}
