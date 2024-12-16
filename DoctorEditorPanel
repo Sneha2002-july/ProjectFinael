@@ -1,0 +1,62 @@
+package com.HIS.view;
+
+import java.awt.CardLayout;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Date;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import com.HIS.Controller.DoctorTableModel;
+import com.HIS.model.Doctor;
+
+public class DoctorEditorPanel extends DoctorProfilePanel {
+    private Doctor doctor; // Doctor being edited
+    private JButton updateButton;
+    public DoctorEditorPanel(CardLayout cardLayout, JPanel container, DoctorTableModel tableModel, Doctor doctor) {
+        super(cardLayout, container, tableModel);
+        this.doctor = doctor;
+        populateFields(doctor);
+        updateButton = new JButton("Update");
+        updateButton.addActionListener(e -> updateDoctorProfile(tableModel));
+        JPanel buttonPanel = (JPanel) this.getComponent(0); // Assuming buttons are in the first component
+        buttonPanel.add(updateButton);
+    }
+    private void populateFields(Doctor doctor) {
+        nameField.setText(doctor.getName());
+        contactField.setText(doctor.getContact());
+        emailField.setText(doctor.getEmail());
+        addressField.setText(doctor.getAddress());
+        qualificationField.setText(doctor.getQualification());
+        departmentDropdown.setSelectedItem(doctor.getDepartment());
+        specializationDropdown.setSelectedItem(doctor.getSpecialization());
+        dobPicker.setDate(Date.from(doctor.getDob().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        consultationFeeField.setText(String.valueOf(doctor.getConsultationFee()));
+        // Populate available days
+        for (JCheckBox checkBox : dayCheckBoxes) {
+            checkBox.setSelected(doctor.getAvailableDays().contains(checkBox.getText()));
+        }
+        try {
+			startTimeSpinner.setValue(new SimpleDateFormat("HH:mm").parse(doctor.getStartTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			endTimeSpinner.setValue(new SimpleDateFormat("HH:mm").parse(doctor.getEndTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    private void updateDoctorProfile(DoctorTableModel tableModel) {
+        saveDoctorProfile(tableModel);
+        // Update the existing doctor in the list
+        tableModel.updateDoctor(doctor);
+        JOptionPane.showMessageDialog(this, "Doctor Profile Updated Successfully!");
+    }
+}
